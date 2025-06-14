@@ -22,15 +22,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, streamingMessage]);
 
-  // Pre-fill input when text is selected
-  useEffect(() => {
-    if (selectedText) {
-      setInput(`Can you explain this: "${selectedText}"`);
-    }
-  }, [selectedText]);
-
   const handleSend = async () => {
-    if (!input.trim() && attachments.length === 0) return;
+    if (!input.trim() && attachments.length === 0 && !selectedText) return;
 
     const request = {
       message: input,
@@ -117,25 +110,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </button>
       </div>
 
-      {/* Selected Text Indicator */}
-      {selectedText && (
-        <div style={{
-          padding: '12px 16px',
-          backgroundColor: '#fff3cd',
-          border: '1px solid #ffeaa7',
-          margin: '8px',
-          borderRadius: '6px',
-          fontSize: '14px',
-        }}>
-          <div style={{ fontWeight: '600', marginBottom: '4px' }}>
-            📝 Selected Text:
-          </div>
-          <div style={{ fontStyle: 'italic', color: '#856404' }}>
-            "{selectedText.length > 100 ? selectedText.substring(0, 100) + '...' : selectedText}"
-          </div>
-        </div>
-      )}
-
       {/* Messages */}
       <div style={{
         flex: 1,
@@ -192,13 +166,42 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         borderRadius: '0 0 8px 8px',
       }}>
         {/* Attachments */}
-        {attachments.length > 0 && (
+        {(attachments.length > 0 || selectedText) && (
           <div style={{
             marginBottom: '8px',
             display: 'flex',
             flexWrap: 'wrap',
             gap: '8px',
           }}>
+            {/* Selected text as attachment */}
+            {selectedText && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: '#fff3cd',
+                  padding: '4px 8px',
+                  borderRadius: '16px',
+                  fontSize: '12px',
+                  border: '1px solid #ffeaa7',
+                }}
+              >
+                📝 Selected Text: "{selectedText.length > 30 ? selectedText.substring(0, 30) + '...' : selectedText}"
+                <button
+                  onClick={() => onClearSelectedText?.()}
+                  style={{
+                    marginLeft: '4px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#f44336',
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            {/* File attachments */}
             {attachments.map((file, index) => (
               <div
                 key={index}
@@ -331,11 +334,27 @@ const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
       }}>
         {message.content}
         
-        {message.attachments && message.attachments.length > 0 && (
-          <div style={{ marginTop: '8px', fontSize: '12px', opacity: 0.8 }}>
-            📎 {message.attachments.length} attachment(s)
-          </div>
-        )}
+        {/* Show attachments */}
+        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          {message.attachments && message.attachments.length > 0 && (
+            <div style={{ fontSize: '12px', opacity: 0.8 }}>
+              📎 {message.attachments.length} file attachment(s)
+            </div>
+          )}
+          {message.context && (
+            <div style={{ 
+              fontSize: '12px', 
+              opacity: 0.8,
+              backgroundColor: isUser ? 'rgba(255,255,255,0.1)' : '#fff3cd',
+              padding: '4px 8px',
+              borderRadius: '8px',
+              border: isUser ? '1px solid rgba(255,255,255,0.2)' : '1px solid #ffeaa7',
+              color: isUser ? 'white' : '#856404'
+            }}>
+              📝 Selected Text: "{message.context.length > 50 ? message.context.substring(0, 50) + '...' : message.context}"
+            </div>
+          )}
+        </div>
       </div>
       
       <div style={{

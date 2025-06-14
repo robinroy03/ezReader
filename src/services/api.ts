@@ -9,6 +9,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   timestamp: number;
   attachments?: File[];
+  context?: string; // Selected text from PDF
 }
 
 export interface TTSRequest {

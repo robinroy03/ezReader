@@ -19,6 +19,7 @@ export const useChat = () => {
         role: 'user',
         timestamp: Date.now(),
         attachments: request.attachments,
+        context: request.context,
       };
 
       setMessages(prev => [...prev, userMessage]);
