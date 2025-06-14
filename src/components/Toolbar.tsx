@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { useTTS } from '../hooks/useTTS';
 import { apiService } from '../services/api';
-import { Button } from './ui/button';
 
 interface ToolbarProps {
   onFileUpload: (file: File) => void;
@@ -58,7 +57,14 @@ const Toolbar: React.FC<ToolbarProps> = ({
   };
 
   return (
-    <div className="flex gap-3 p-4 bg-white border-b-2 border-border items-center shadow-light">
+    <div style={{
+      display: 'flex',
+      gap: '12px',
+      padding: '16px',
+      backgroundColor: 'white',
+      borderBottom: '1px solid #e9ecef',
+      alignItems: 'center',
+    }}>
       {/* Upload Button */}
       <div>
         <input
@@ -66,50 +72,90 @@ const Toolbar: React.FC<ToolbarProps> = ({
           type="file"
           accept=".pdf"
           onChange={handleFileSelect}
-          className="hidden"
+          style={{ display: 'none' }}
         />
-        <Button
+        <button
           onClick={() => fileInputRef.current?.click()}
           disabled={isLoading}
-          variant="success"
-          className="flex items-center gap-2"
+          style={{
+            padding: '10px 16px',
+            backgroundColor: '#28a745',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            fontSize: '14px',
+            fontWeight: '500',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            opacity: isLoading ? 0.6 : 1,
+          }}
           title="Upload PDF file"
         >
           📄 {isLoading ? 'Uploading...' : 'Upload File'}
-        </Button>
+        </button>
       </div>
 
       {/* TTS Button */}
-      <Button
+      <button
         onClick={handleTTS}
         disabled={ttsLoading || !pdfText.trim()}
-        variant={isPlaying ? 'destructive' : 'default'}
-        size="icon"
-        className="text-base"
+        style={{
+          padding: '10px 12px',
+          backgroundColor: isPlaying ? '#dc3545' : '#007bff',
+          color: 'white',
+          border: 'none',
+          borderRadius: '6px',
+          cursor: (ttsLoading || !pdfText.trim()) ? 'not-allowed' : 'pointer',
+          fontSize: '16px',
+          opacity: (ttsLoading || !pdfText.trim()) ? 0.6 : 1,
+        }}
         title={isPlaying ? 'Stop speech' : 'Read PDF aloud'}
       >
         {ttsLoading ? '⏳' : isPlaying ? '⏹️' : '🔊'}
-      </Button>
+      </button>
 
       {/* Share Button */}
-      <Button
+      <button
         onClick={handleShare}
-        variant="secondary"
-        className="flex items-center gap-2"
+        style={{
+          padding: '10px 16px',
+          backgroundColor: '#6c757d',
+          color: 'white',
+          border: 'none',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          fontSize: '14px',
+          fontWeight: '500',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}
         title="Share document"
       >
         🔗 Share
-      </Button>
+      </button>
 
       {/* Status Messages */}
       {isLoading && (
-        <div className="ml-auto text-sm text-gray-600 italic font-base">
+        <div style={{
+          marginLeft: 'auto',
+          fontSize: '14px',
+          color: '#6c757d',
+          fontStyle: 'italic',
+        }}>
           Uploading PDF...
         </div>
       )}
       
       {ttsLoading && (
-        <div className={`${isLoading ? 'ml-0' : 'ml-auto'} text-sm text-gray-600 italic font-base`}>
+        <div style={{
+          marginLeft: isLoading ? '0' : 'auto',
+          fontSize: '14px',
+          color: '#6c757d',
+          fontStyle: 'italic',
+        }}>
           Generating speech...
         </div>
       )}

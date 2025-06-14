@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { ChatMessage } from '../services/api';
 import { useChat } from '../hooks/useChat';
-import { Button } from './ui/button';
-import { Textarea } from './ui/textarea';
-import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 
 interface ChatInterfaceProps {
   selectedText?: string;
@@ -74,30 +71,64 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
+
+
   return (
-    <Card className="flex flex-col h-full bg-gray-50">
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      backgroundColor: '#f8f9fa',
+      border: '1px solid #e9ecef',
+      borderRadius: '8px',
+    }}>
       {/* Header */}
-      <CardHeader className="border-b-2 border-border bg-white rounded-t-base flex flex-row justify-between items-center p-4">
-        <CardTitle className="text-lg font-heading">
+      <div style={{
+        padding: '16px',
+        borderBottom: '1px solid #e9ecef',
+        backgroundColor: 'white',
+        borderRadius: '8px 8px 0 0',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
+        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>
           💬 AI Assistant
-        </CardTitle>
-        <Button
+        </h3>
+        <button
           onClick={clearMessages}
-          variant="outline"
-          size="sm"
-          className="text-xs"
+          style={{
+            background: 'none',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            padding: '4px 8px',
+            fontSize: '12px',
+            cursor: 'pointer',
+          }}
         >
           Clear
-        </Button>
-      </CardHeader>
+        </button>
+      </div>
 
       {/* Messages */}
-      <CardContent className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+      <div style={{
+        flex: 1,
+        overflowY: 'auto',
+        padding: '16px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+      }}>
         {messages.length === 0 ? (
-          <div className="text-center text-gray-600 italic mt-16">
-            <div className="text-5xl mb-4">🤖</div>
-            <p className="font-base">Select text from the PDF and ask me anything!</p>
-            <p className="text-sm font-base">
+          <div style={{
+            textAlign: 'center',
+            color: '#6c757d',
+            fontStyle: 'italic',
+            marginTop: '60px',
+          }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🤖</div>
+            <p>Select text from the PDF and ask me anything!</p>
+            <p style={{ fontSize: '14px' }}>
               I can help explain concepts, summarize content, or answer questions.
             </p>
           </div>
@@ -109,8 +140,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
         {/* Streaming message */}
         {streamingMessage && (
-          <div className="bg-white p-3 rounded-base border-2 border-border self-start max-w-[85%] shadow-light">
-            <div className="text-sm leading-relaxed font-base">
+          <div style={{
+            backgroundColor: 'white',
+            padding: '12px',
+            borderRadius: '12px',
+            border: '1px solid #e9ecef',
+            alignSelf: 'flex-start',
+            maxWidth: '85%',
+          }}>
+            <div style={{ fontSize: '14px', lineHeight: '1.5' }}>
               {streamingMessage}
               <span className="blinking-cursor">|</span>
             </div>
@@ -118,36 +156,74 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         )}
 
         <div ref={messagesEndRef} />
-      </CardContent>
+      </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t-2 border-border bg-white rounded-b-base">
+      <div style={{
+        padding: '16px',
+        borderTop: '1px solid #e9ecef',
+        backgroundColor: 'white',
+        borderRadius: '0 0 8px 8px',
+      }}>
         {/* Attachments */}
         {(attachments.length > 0 || selectedText) && (
-          <div className="mb-2 flex flex-wrap gap-2">
+          <div style={{
+            marginBottom: '8px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '8px',
+          }}>
             {/* Selected text as attachment */}
             {selectedText && (
-              <div className="flex items-center bg-yellow-100 px-2 py-1 rounded-base text-xs border-2 border-yellow-300 shadow-light">
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: '#fff3cd',
+                  padding: '4px 8px',
+                  borderRadius: '16px',
+                  fontSize: '12px',
+                  border: '1px solid #ffeaa7',
+                }}
+              >
                 📝 Selected Text: "{selectedText.length > 30 ? selectedText.substring(0, 30) + '...' : selectedText}"
                 <button
                   onClick={() => onClearSelectedText?.()}
-                  className="ml-1 text-red-500 hover:text-red-700 border-none bg-transparent cursor-pointer"
+                  style={{
+                    marginLeft: '4px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#f44336',
+                  }}
                 >
                   ×
                 </button>
               </div>
             )}
-
             {/* File attachments */}
             {attachments.map((file, index) => (
               <div
                 key={index}
-                className="flex items-center bg-blue-100 px-2 py-1 rounded-base text-xs border-2 border-blue-300 shadow-light"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: '#e3f2fd',
+                  padding: '4px 8px',
+                  borderRadius: '16px',
+                  fontSize: '12px',
+                }}
               >
                 📎 {file.name}
                 <button
                   onClick={() => removeAttachment(index)}
-                  className="ml-1 text-red-500 hover:text-red-700 border-none bg-transparent cursor-pointer"
+                  style={{
+                    marginLeft: '4px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#f44336',
+                  }}
                 >
                   ×
                 </button>
@@ -156,82 +232,141 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </div>
         )}
 
-        {/* Input */}
-        <div className="flex gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+          <div style={{ flex: 1 }}>
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              onPaste={handlePaste}
+              placeholder="Ask a question about the PDF..."
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                minHeight: '44px',
+                maxHeight: '120px',
+                padding: '12px',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                resize: 'vertical',
+                fontSize: '14px',
+                lineHeight: '1.4',
+                outline: 'none',
+              }}
+            />
+          </div>
           
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyPress}
-            onPaste={handlePaste}
-            placeholder="Ask about the PDF content..."
-            className="flex-1 resize-none"
-            rows={3}
-          />
-          
-          <div className="flex flex-col gap-2">
-            <Button
+          <div style={{ display: 'flex', gap: '4px' }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileUpload}
+              style={{ display: 'none' }}
+            />
+            
+            <button
               onClick={() => fileInputRef.current?.click()}
-              variant="outline"
-              size="icon"
+              disabled={isLoading}
+              style={{
+                padding: '12px',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                backgroundColor: 'white',
+                cursor: 'pointer',
+                fontSize: '16px',
+              }}
               title="Attach image"
             >
               📎
-            </Button>
+            </button>
             
-            <Button
+            <button
               onClick={handleSend}
-              disabled={isLoading || (!input.trim() && attachments.length === 0 && !selectedText)}
-              size="icon"
-              title="Send message"
+              disabled={isLoading || (!input.trim() && attachments.length === 0)}
+              style={{
+                padding: '12px 16px',
+                backgroundColor: isLoading ? '#ccc' : '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                fontSize: '16px',
+              }}
             >
-              📤
-            </Button>
+              {isLoading ? '⏳' : '➤'}
+            </button>
           </div>
         </div>
       </div>
-    </Card>
+
+      <style>{`
+        .blinking-cursor {
+          animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0; }
+        }
+      `}</style>
+    </div>
   );
 };
 
-// Message Bubble Component
 const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
   const isUser = message.role === 'user';
   
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-[85%] p-3 rounded-base border-2 border-border shadow-light font-base ${
-        isUser 
-          ? 'bg-main text-black' 
-          : 'bg-white text-black'
-      }`}>
-        {message.attachments && message.attachments.length > 0 && (
-          <div className="mb-2 flex flex-wrap gap-1">
-            {message.attachments.map((attachment, index) => (
-              <div key={index} className="text-xs bg-gray-100 px-2 py-1 rounded border">
-                📎 {attachment.name}
-              </div>
-            ))}
-          </div>
-        )}
+    <div style={{
+      alignSelf: isUser ? 'flex-end' : 'flex-start',
+      maxWidth: '85%',
+    }}>
+      <div style={{
+        backgroundColor: isUser ? '#007bff' : 'white',
+        color: isUser ? 'white' : 'black',
+        padding: '12px',
+        borderRadius: '12px',
+        border: isUser ? 'none' : '1px solid #e9ecef',
+        fontSize: '14px',
+        lineHeight: '1.5',
+      }}>
+        {message.content}
         
-        {message.context && (
-          <div className="mb-2 p-2 bg-yellow-50 border-l-2 border-yellow-300 text-xs italic">
-            <strong>Context:</strong> "{message.context.length > 100 ? message.context.substring(0, 100) + '...' : message.context}"
-          </div>
-        )}
-        
-        <div className="text-sm leading-relaxed whitespace-pre-wrap">
-          {message.content}
+        {/* Show attachments */}
+        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          {message.attachments && message.attachments.length > 0 && (
+            <div style={{ fontSize: '12px', opacity: 0.8 }}>
+              📎 {message.attachments.length} file attachment(s)
+            </div>
+          )}
+          {message.context && (
+            <div style={{ 
+              fontSize: '12px', 
+              opacity: 0.8,
+              backgroundColor: isUser ? 'rgba(255,255,255,0.1)' : '#fff3cd',
+              padding: '4px 8px',
+              borderRadius: '8px',
+              border: isUser ? '1px solid rgba(255,255,255,0.2)' : '1px solid #ffeaa7',
+              color: isUser ? 'white' : '#856404'
+            }}>
+              📝 Selected Text: "{message.context.length > 50 ? message.context.substring(0, 50) + '...' : message.context}"
+            </div>
+          )}
         </div>
+      </div>
+      
+      <div style={{
+        fontSize: '11px',
+        color: '#6c757d',
+        marginTop: '4px',
+        textAlign: isUser ? 'right' : 'left',
+      }}>
+        {new Date(message.timestamp).toLocaleTimeString([], { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        })}
       </div>
     </div>
   );
