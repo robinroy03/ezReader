@@ -4,11 +4,14 @@ FROM node:18-slim
 # Set working directory
 WORKDIR /app
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Copy package files
-COPY package*.json ./
+COPY package*.json pnpm-lock.yaml ./
 
 # Install dependencies
-RUN npm install
+RUN pnpm install
 
 # Copy project files
 COPY . .
@@ -17,4 +20,4 @@ COPY . .
 EXPOSE 5173
 
 # Start development server with host set to allow external access
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["pnpm", "run", "dev", "--", "--host"]
