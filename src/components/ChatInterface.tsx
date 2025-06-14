@@ -232,8 +232,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
-          <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'stretch' }}>
+          <div style={{ flex: 1, marginRight: '4px' }}>
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -252,11 +252,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 fontSize: '14px',
                 lineHeight: '1.4',
                 outline: 'none',
+                height: '68px', // Fixed height to match button container
+                boxSizing: 'border-box',
               }}
             />
           </div>
           
-          <div style={{ display: 'flex', gap: '4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '68px' }}>
             <input
               ref={fileInputRef}
               type="file"
@@ -270,14 +272,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               onClick={() => fileInputRef.current?.click()}
               disabled={isLoading}
               style={{
-                padding: '12px',
+                padding: '8px 12px',
                 border: '1px solid #ddd',
                 borderRadius: '8px',
                 backgroundColor: 'white',
                 cursor: 'pointer',
                 fontSize: '16px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
-              title="Attach image"
+              title="Attach"
             >
               📎
             </button>
@@ -286,13 +292,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               onClick={handleSend}
               disabled={isLoading || (!input.trim() && attachments.length === 0)}
               style={{
-                padding: '12px 16px',
+                padding: '0 16px',
                 backgroundColor: isLoading ? '#ccc' : '#007bff',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
                 cursor: isLoading ? 'not-allowed' : 'pointer',
                 fontSize: '16px',
+                flex: 1,
+                minHeight: '32px',
               }}
             >
               {isLoading ? '⏳' : '➤'}
