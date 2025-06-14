@@ -42,7 +42,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     try {
       const response = await apiService.shareDocument('current-pdf', {
         title: 'Shared PDF Document',
-        description: 'PDF document shared from Smart PDF Reader',
+        description: 'PDF document shared from ezReader',
       });
       
       // Copy to clipboard
@@ -93,7 +93,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           }}
           title="Upload PDF file"
         >
-          📄 {isLoading ? 'Uploading...' : 'Upload Files'}
+          📄 {isLoading ? 'Uploading...' : 'Upload File'}
         </button>
       </div>
 

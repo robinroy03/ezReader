@@ -62,6 +62,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = Array.from(e.clipboardData.items);
+    const imageItems = items.filter(item => item.type.startsWith('image/'));
+    
+    if (imageItems.length > 0) {
+      e.preventDefault();
+      
+      imageItems.forEach(item => {
+        const file = item.getAsFile();
+        if (file) {
+          setAttachments(prev => [...prev, file]);
+        }
+      });
+    }
+  };
+
 
 
   return (
@@ -219,6 +235,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
+              onPaste={handlePaste}
               placeholder="Ask a question about the PDF..."
               disabled={isLoading}
               style={{

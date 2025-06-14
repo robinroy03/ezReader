@@ -122,7 +122,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
           color: '#6c757d',
           fontSize: '14px'
         }}>
-          Use the "Upload Files" button to select a PDF document
+          Use the "Upload File" button to select a PDF document
         </div>
       </div>
     );

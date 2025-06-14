@@ -54,7 +54,7 @@ function App() {
             alignItems: 'center',
             gap: '12px',
           }}>
-            📚 Smart PDF Reader
+            📚 ezReader
             <span style={{
               fontSize: '14px',
               fontWeight: '400',
@@ -63,7 +63,7 @@ function App() {
               padding: '4px 8px',
               borderRadius: '12px',
             }}>
-              AI-Powered
+              now learn with no context switching!
             </span>
           </h1>
         </div>
@@ -173,7 +173,7 @@ function App() {
             <span>📝 Text selected: {selectedText.length} characters</span>
           )}
           <span>
-            🚀 Smart PDF Reader v1.0
+            🚀 ezReader v1.0
           </span>
         </div>
       </div>
