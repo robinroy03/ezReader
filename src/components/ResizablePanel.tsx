@@ -19,7 +19,7 @@ export const ResizableContainer: React.FC<ResizableContainerProps> = ({
   className = '' 
 }) => {
   return (
-    <div className={`resizable-container ${className}`}>
+    <div className={`flex h-full w-full ${className}`}>
       {children}
     </div>
   );
@@ -71,12 +71,14 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   return (
     <>
       <div
-        className={`resize-handle ${isResizing ? 'resizing' : ''}`}
+        className={`w-1 bg-gray-300 cursor-col-resize transition-colors duration-200 flex-shrink-0 hover:bg-main ${
+          isResizing ? 'bg-main shadow-[0_0_4px_rgba(136,170,238,0.5)]' : ''
+        }`}
         onMouseDown={startResize}
       />
       <div
         ref={panelRef}
-        className={`resizable-panel ${className}`}
+        className={`flex flex-col min-w-[200px] overflow-hidden ${className}`}
         style={{ width: `${width}px` }}
       >
         {children}

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { Card, CardContent } from './ui/card';
 
 interface PDFViewerProps {
   /** URL of the PDF file to display */
@@ -96,86 +97,45 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
 
   if (!pdfUrl) {
     return (
-      <div style={{
-        width,
-        height,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f8f9fa',
-        border: '2px dashed #dee2e6',
-        borderRadius: '8px',
-        flexDirection: 'column',
-        gap: '16px',
-      }}>
-        <div style={{ fontSize: '64px' }}>📄</div>
-        <div style={{ 
-          textAlign: 'center', 
-          color: '#6c757d',
-          fontSize: '18px',
-          fontWeight: '500'
-        }}>
-          No PDF loaded
-        </div>
-        <div style={{ 
-          textAlign: 'center', 
-          color: '#6c757d',
-          fontSize: '14px'
-        }}>
-          Use the "Upload File" button to select a PDF document
-        </div>
-      </div>
+      <Card 
+        className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 flex-col gap-4"
+        style={{ width, height }}
+      >
+        <CardContent className="text-center p-8">
+          <div className="text-6xl mb-4">📄</div>
+          <div className="text-gray-600 text-lg font-base mb-2">
+            No PDF loaded
+          </div>
+          <div className="text-gray-600 text-sm font-base">
+            Use the "Upload File" button to select a PDF document
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   const finalViewerUrl = constructViewerUrl();
 
   return (
-    <div style={{ width, height, position: 'relative' }}>
+    <div className="relative" style={{ width, height }}>
       {isLoading && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'rgba(255, 255, 255, 0.95)',
-          padding: '24px',
-          borderRadius: '8px',
-          zIndex: 10,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '12px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        }}>
-          <div style={{ fontSize: '32px' }}>📄</div>
-          <div style={{ fontSize: '16px', fontWeight: '500' }}>Loading PDF viewer...</div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/95 p-6 rounded-base z-10 flex flex-col items-center gap-3 shadow-light border-2 border-border">
+          <div className="text-3xl">📄</div>
+          <div className="text-base font-base">Loading PDF viewer...</div>
         </div>
       )}
       
       {error && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'rgba(255, 255, 255, 0.95)',
-          border: '2px solid #dc3545',
-          color: '#dc3545',
-          padding: '24px',
-          borderRadius: '8px',
-          textAlign: 'center',
-          zIndex: 10,
-          maxWidth: '400px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        }}>
-          <div style={{ fontSize: '32px', marginBottom: '12px' }}>❌</div>
-          <div style={{ fontWeight: '600', marginBottom: '8px' }}>Error:</div>
-          <div style={{ marginBottom: '12px' }}>{error}</div>
-          <div style={{ fontSize: '12px', opacity: 0.8 }}>
-            Make sure to run: <code>npm run dev</code>
-          </div>
-        </div>
+        <Card className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/95 border-2 border-red-500 text-red-600 z-10 max-w-sm">
+          <CardContent className="text-center p-6">
+            <div className="text-3xl mb-3">❌</div>
+            <div className="font-heading mb-2">Error:</div>
+            <div className="mb-3 font-base">{error}</div>
+            <div className="text-xs opacity-80 font-base">
+              Make sure to run: <code className="bg-gray-100 px-1 rounded">npm run dev</code>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       <iframe
@@ -183,11 +143,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         src={finalViewerUrl}
         width="100%"
         height="100%"
-        style={{
-          border: 'none',
-          borderRadius: '8px',
-          backgroundColor: 'white',
-        }}
+        className="border-none rounded-base bg-white"
         title="PDF Viewer"
         onLoad={handleIframeLoad}
         onError={handleIframeError}
