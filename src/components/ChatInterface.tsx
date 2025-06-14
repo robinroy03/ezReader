@@ -71,39 +71,39 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
-
-
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      backgroundColor: '#f8f9fa',
-      border: '1px solid #e9ecef',
+      backgroundColor: 'var(--bg-secondary)',
+      border: `1px solid var(--border-primary)`,
       borderRadius: '8px',
     }}>
       {/* Header */}
       <div style={{
         padding: '16px',
-        borderBottom: '1px solid #e9ecef',
-        backgroundColor: 'white',
+        borderBottom: `1px solid var(--border-primary)`,
+        backgroundColor: 'var(--bg-primary)',
         borderRadius: '8px 8px 0 0',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
       }}>
-        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>
+        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)' }}>
           💬 AI Assistant
         </h3>
         <button
           onClick={clearMessages}
           style={{
             background: 'none',
-            border: '1px solid #ddd',
+            border: `1px solid var(--border-primary)`,
             borderRadius: '4px',
             padding: '4px 8px',
             fontSize: '12px',
             cursor: 'pointer',
+            color: 'var(--text-secondary)',
+            backgroundColor: 'var(--bg-secondary)',
           }}
         >
           Clear
@@ -122,7 +122,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         {messages.length === 0 ? (
           <div style={{
             textAlign: 'center',
-            color: '#6c757d',
+            color: 'var(--text-secondary)',
             fontStyle: 'italic',
             marginTop: '60px',
           }}>
@@ -141,14 +141,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         {/* Streaming message */}
         {streamingMessage && (
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--bg-primary)',
             padding: '12px',
             borderRadius: '12px',
-            border: '1px solid #e9ecef',
+            border: `1px solid var(--border-primary)`,
             alignSelf: 'flex-start',
             maxWidth: '85%',
           }}>
-            <div style={{ fontSize: '14px', lineHeight: '1.5' }}>
+            <div style={{ fontSize: '14px', lineHeight: '1.5', color: 'var(--text-primary)' }}>
               {streamingMessage}
               <span className="blinking-cursor">|</span>
             </div>
@@ -161,8 +161,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       {/* Input Area */}
       <div style={{
         padding: '16px',
-        borderTop: '1px solid #e9ecef',
-        backgroundColor: 'white',
+        borderTop: `1px solid var(--border-primary)`,
+        backgroundColor: 'var(--bg-primary)',
         borderRadius: '0 0 8px 8px',
       }}>
         {/* Attachments */}
@@ -179,11 +179,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  backgroundColor: '#fff3cd',
+                  backgroundColor: 'var(--bg-tertiary)',
+                  color: 'var(--text-primary)',
                   padding: '4px 8px',
                   borderRadius: '16px',
                   fontSize: '12px',
-                  border: '1px solid #ffeaa7',
+                  border: `1px solid var(--border-secondary)`,
                 }}
               >
                 📝 Selected Text: "{selectedText.length > 30 ? selectedText.substring(0, 30) + '...' : selectedText}"
@@ -194,7 +195,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
-                    color: '#f44336',
+                    color: 'var(--button-danger)',
                   }}
                 >
                   ×
@@ -208,10 +209,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  backgroundColor: '#e3f2fd',
+                  backgroundColor: 'var(--bg-tertiary)',
+                  color: 'var(--text-primary)',
                   padding: '4px 8px',
                   borderRadius: '16px',
                   fontSize: '12px',
+                  border: `1px solid var(--border-secondary)`,
                 }}
               >
                 📎 {file.name}
@@ -222,7 +225,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
-                    color: '#f44336',
+                    color: 'var(--button-danger)',
                   }}
                 >
                   ×
@@ -246,7 +249,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 minHeight: '44px',
                 maxHeight: '120px',
                 padding: '12px',
-                border: '1px solid #ddd',
+                border: `1px solid var(--border-primary)`,
                 borderRadius: '8px',
                 resize: 'vertical',
                 fontSize: '14px',
@@ -254,6 +257,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 outline: 'none',
                 height: '68px', // Fixed height to match button container
                 boxSizing: 'border-box',
+                backgroundColor: 'var(--bg-primary)',
+                color: 'var(--text-primary)',
               }}
             />
           </div>
@@ -273,9 +278,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               disabled={isLoading}
               style={{
                 padding: '8px 12px',
-                border: '1px solid #ddd',
+                border: `1px solid var(--border-primary)`,
                 borderRadius: '8px',
-                backgroundColor: 'white',
+                backgroundColor: 'var(--bg-primary)',
+                color: 'var(--text-primary)',
                 cursor: 'pointer',
                 fontSize: '16px',
                 height: '32px',
@@ -293,7 +299,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               disabled={isLoading || (!input.trim() && attachments.length === 0)}
               style={{
                 padding: '0 16px',
-                backgroundColor: isLoading ? '#ccc' : '#007bff',
+                backgroundColor: isLoading ? 'var(--text-secondary)' : 'var(--button-primary)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
@@ -332,11 +338,11 @@ const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
       maxWidth: '85%',
     }}>
       <div style={{
-        backgroundColor: isUser ? '#007bff' : 'white',
-        color: isUser ? 'white' : 'black',
+        backgroundColor: isUser ? 'var(--button-primary)' : 'var(--bg-primary)',
+        color: isUser ? 'white' : 'var(--text-primary)',
         padding: '12px',
         borderRadius: '12px',
-        border: isUser ? 'none' : '1px solid #e9ecef',
+        border: isUser ? 'none' : `1px solid var(--border-primary)`,
         fontSize: '14px',
         lineHeight: '1.5',
       }}>
@@ -353,11 +359,11 @@ const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
             <div style={{ 
               fontSize: '12px', 
               opacity: 0.8,
-              backgroundColor: isUser ? 'rgba(255,255,255,0.1)' : '#fff3cd',
+              backgroundColor: isUser ? 'rgba(255,255,255,0.1)' : 'var(--bg-secondary)',
               padding: '4px 8px',
               borderRadius: '8px',
-              border: isUser ? '1px solid rgba(255,255,255,0.2)' : '1px solid #ffeaa7',
-              color: isUser ? 'white' : '#856404'
+              border: isUser ? '1px solid rgba(255,255,255,0.2)' : `1px solid var(--border-secondary)`,
+              color: isUser ? 'white' : 'var(--text-secondary)'
             }}>
               📝 Selected Text: "{message.context.length > 50 ? message.context.substring(0, 50) + '...' : message.context}"
             </div>
@@ -367,7 +373,7 @@ const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
       
       <div style={{
         fontSize: '11px',
-        color: '#6c757d',
+        color: 'var(--text-secondary)',
         marginTop: '4px',
         textAlign: isUser ? 'right' : 'left',
       }}>

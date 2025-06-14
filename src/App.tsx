@@ -32,13 +32,13 @@ function App() {
       width: '100vw',
       display: 'flex',
       flexDirection: 'column',
-      backgroundColor: '#f5f5f5',
+      backgroundColor: 'var(--bg-secondary)',
       overflow: 'hidden',
     }}>
       {/* Header */}
       <div style={{
-        backgroundColor: 'white',
-        borderBottom: '2px solid #e9ecef',
+        backgroundColor: 'var(--bg-primary)',
+        borderBottom: `2px solid var(--border-primary)`,
         padding: '8px 0',
         flexShrink: 0,
       }}>
@@ -49,7 +49,7 @@ function App() {
             margin: 0,
             fontSize: '24px',
             fontWeight: '700',
-            color: '#2c3e50',
+            color: 'var(--text-accent)',
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
@@ -58,8 +58,8 @@ function App() {
             <span style={{
               fontSize: '14px',
               fontWeight: '400',
-              color: '#6c757d',
-              backgroundColor: '#e9ecef',
+              color: 'var(--text-secondary)',
+              backgroundColor: 'var(--bg-secondary)',
               padding: '4px 8px',
               borderRadius: '12px',
             }}>
@@ -101,9 +101,9 @@ function App() {
           }}>
             {pdfError && (
               <div style={{
-                backgroundColor: '#f8d7da',
-                border: '1px solid #f5c6cb',
-                color: '#721c24',
+                backgroundColor: 'var(--error-bg)',
+                border: `1px solid var(--error-border)`,
+                color: 'var(--error-text)',
                 padding: '12px',
                 borderRadius: '6px',
                 marginBottom: '16px',
@@ -115,9 +115,9 @@ function App() {
             
             <div style={{
               flex: 1,
-              backgroundColor: 'white',
+              backgroundColor: 'var(--bg-primary)',
               borderRadius: '8px',
-              border: '1px solid #dee2e6',
+              border: `1px solid var(--border-secondary)`,
               overflow: 'hidden',
               position: 'relative',
             }}>
@@ -150,11 +150,11 @@ function App() {
 
       {/* Footer/Status Bar */}
       <div style={{
-        backgroundColor: 'white',
-        borderTop: '1px solid #e9ecef',
+        backgroundColor: 'var(--bg-primary)',
+        borderTop: `1px solid var(--border-primary)`,
         padding: '8px 20px',
         fontSize: '12px',
-        color: '#6c757d',
+        color: 'var(--text-secondary)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',

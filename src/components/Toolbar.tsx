@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { useTTS } from '../hooks/useTTS';
 import { apiService } from '../services/api';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface ToolbarProps {
   onFileUpload: (file: File) => void;
@@ -15,6 +16,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isPlaying, isLoading: ttsLoading, playText, stopPlayback } = useTTS();
+  const { theme, toggleTheme } = useTheme();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,8 +63,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
       display: 'flex',
       gap: '12px',
       padding: '16px',
-      backgroundColor: 'white',
-      borderBottom: '1px solid #e9ecef',
+      backgroundColor: 'var(--bg-primary)',
+      borderBottom: `1px solid var(--border-primary)`,
       alignItems: 'center',
     }}>
       {/* Upload Button */}
@@ -79,7 +81,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           disabled={isLoading}
           style={{
             padding: '10px 16px',
-            backgroundColor: '#28a745',
+            backgroundColor: 'var(--button-success)',
             color: 'white',
             border: 'none',
             borderRadius: '6px',
@@ -103,7 +105,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         disabled={ttsLoading || !pdfText.trim()}
         style={{
           padding: '10px 12px',
-          backgroundColor: isPlaying ? '#dc3545' : '#007bff',
+          backgroundColor: isPlaying ? 'var(--button-danger)' : 'var(--button-primary)',
           color: 'white',
           border: 'none',
           borderRadius: '6px',
@@ -121,7 +123,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         onClick={handleShare}
         style={{
           padding: '10px 16px',
-          backgroundColor: '#6c757d',
+          backgroundColor: 'var(--button-secondary)',
           color: 'white',
           border: 'none',
           borderRadius: '6px',
@@ -137,12 +139,24 @@ const Toolbar: React.FC<ToolbarProps> = ({
         🔗 Share
       </button>
 
+      {/* Theme Toggle Button */}
+      <button
+        onClick={toggleTheme}
+        className="theme-toggle"
+        style={{
+          marginLeft: 'auto',
+        }}
+        title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      >
+        {theme === 'light' ? '🌙' : '☀️'}
+      </button>
+
       {/* Status Messages */}
       {isLoading && (
         <div style={{
-          marginLeft: 'auto',
+          marginLeft: theme ? '0' : 'auto',
           fontSize: '14px',
-          color: '#6c757d',
+          color: 'var(--text-secondary)',
           fontStyle: 'italic',
         }}>
           Uploading PDF...
@@ -151,9 +165,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
       
       {ttsLoading && (
         <div style={{
-          marginLeft: isLoading ? '0' : 'auto',
+          marginLeft: (isLoading || theme) ? '0' : 'auto',
           fontSize: '14px',
-          color: '#6c757d',
+          color: 'var(--text-secondary)',
           fontStyle: 'italic',
         }}>
           Generating speech...

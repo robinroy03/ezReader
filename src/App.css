@@ -4,6 +4,7 @@
   margin: 0;
   padding: 0;
   overflow: hidden;
+  background-color: var(--bg-secondary);
 }
 
 .logo {
@@ -39,7 +40,7 @@
 }
 
 .read-the-docs {
-  color: #888;
+  color: var(--text-secondary);
 }
 
 /* Resizable panel styles */
@@ -58,17 +59,38 @@
 
 .resize-handle {
   width: 4px;
-  background-color: #e9ecef;
+  background-color: var(--border-primary);
   cursor: col-resize;
   transition: background-color 0.2s ease;
   flex-shrink: 0;
 }
 
 .resize-handle:hover {
-  background-color: #007bff;
+  background-color: var(--button-primary);
 }
 
 .resize-handle.resizing {
-  background-color: #007bff;
+  background-color: var(--button-primary);
   box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+/* Theme toggle button styles */
+.theme-toggle {
+  background: none;
+  border: 2px solid var(--border-primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 18px;
+}
+
+.theme-toggle:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--button-primary);
+  transform: scale(1.05);
 }

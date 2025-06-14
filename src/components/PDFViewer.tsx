@@ -102,8 +102,8 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f8f9fa',
-        border: '2px dashed #dee2e6',
+        backgroundColor: 'var(--bg-secondary)',
+        border: `2px dashed var(--border-primary)`,
         borderRadius: '8px',
         flexDirection: 'column',
         gap: '16px',
@@ -111,7 +111,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         <div style={{ fontSize: '64px' }}>📄</div>
         <div style={{ 
           textAlign: 'center', 
-          color: '#6c757d',
+          color: 'var(--text-primary)',
           fontSize: '18px',
           fontWeight: '500'
         }}>
@@ -119,7 +119,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         </div>
         <div style={{ 
           textAlign: 'center', 
-          color: '#6c757d',
+          color: 'var(--text-secondary)',
           fontSize: '14px'
         }}>
           Use the "Upload File" button to select a PDF document
@@ -138,7 +138,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          background: 'rgba(255, 255, 255, 0.95)',
+          background: 'var(--bg-primary)',
           padding: '24px',
           borderRadius: '8px',
           zIndex: 10,
@@ -146,10 +146,11 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
           flexDirection: 'column',
           alignItems: 'center',
           gap: '12px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          boxShadow: `0 4px 6px var(--shadow)`,
+          border: `1px solid var(--border-primary)`,
         }}>
           <div style={{ fontSize: '32px' }}>📄</div>
-          <div style={{ fontSize: '16px', fontWeight: '500' }}>Loading PDF viewer...</div>
+          <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)' }}>Loading PDF viewer...</div>
         </div>
       )}
       
@@ -159,21 +160,21 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          background: 'rgba(255, 255, 255, 0.95)',
-          border: '2px solid #dc3545',
-          color: '#dc3545',
+          background: 'var(--bg-primary)',
+          border: `2px solid var(--button-danger)`,
+          color: 'var(--button-danger)',
           padding: '24px',
           borderRadius: '8px',
           textAlign: 'center',
           zIndex: 10,
           maxWidth: '400px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          boxShadow: `0 4px 6px var(--shadow)`,
         }}>
           <div style={{ fontSize: '32px', marginBottom: '12px' }}>❌</div>
           <div style={{ fontWeight: '600', marginBottom: '8px' }}>Error:</div>
           <div style={{ marginBottom: '12px' }}>{error}</div>
-          <div style={{ fontSize: '12px', opacity: 0.8 }}>
-            Make sure to run: <code>npm run dev</code>
+          <div style={{ fontSize: '12px', opacity: 0.8, color: 'var(--text-secondary)' }}>
+            Make sure to run: <code style={{ backgroundColor: 'var(--bg-secondary)', padding: '2px 4px', borderRadius: '4px' }}>npm run dev</code>
           </div>
         </div>
       )}
