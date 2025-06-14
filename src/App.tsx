@@ -82,11 +82,13 @@ function App() {
       <div style={{
         flex: 1,
         display: 'flex',
-        padding: '16px',
+        padding: '20px',
         gap: '0',
-        width: '100%',
+        width: 'calc(100% - 40px)',
+        margin: '0 20px',
         minHeight: 0,
         overflow: 'hidden',
+        boxSizing: 'border-box',
       }}>
         <ResizableContainer>
           {/* PDF Viewer Section */}
