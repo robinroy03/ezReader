@@ -7,16 +7,28 @@ interface ToolbarProps {
   onFileUpload: (file: File) => void;
   isLoading?: boolean;
   pdfText?: string; // Full PDF text for TTS
+  onGenerateRoadmap?: () => Promise<string>;
+  onRoadmapGenerated?: (data: Array<{
+    id: string;
+    label: string;
+    indegree_id?: string[];
+    outdegree_id?: string[];
+  }>) => void;
+  onRoadmapError?: (error: string) => void;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
   onFileUpload,
   isLoading = false,
   pdfText = '',
+  onGenerateRoadmap,
+  onRoadmapGenerated,
+  onRoadmapError,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isPlaying, isLoading: ttsLoading, playText, stopPlayback } = useTTS();
   const { theme, toggleTheme } = useTheme();
+  const [roadmapLoading, setRoadmapLoading] = React.useState(false);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -55,6 +67,51 @@ const Toolbar: React.FC<ToolbarProps> = ({
       // Fallback to current URL
       await navigator.clipboard.writeText(window.location.href);
       alert('Current page URL copied to clipboard!');
+    }
+  };
+
+  const handleGenerateRoadmap = async () => {
+    if (!onGenerateRoadmap) return;
+    
+    try {
+      setRoadmapLoading(true);
+      
+      // Clear any previous errors
+      if (onRoadmapError) {
+        onRoadmapError('');
+      }
+      
+      const fullText = await onGenerateRoadmap();
+      
+      if (fullText) {
+        // Generate roadmap from the extracted text
+        const roadmapData = await apiService.generateRoadmap(fullText);
+        console.log('Roadmap generated:', roadmapData);
+        
+        // Pass the roadmap data back to the parent component
+        if (onRoadmapGenerated && roadmapData.roadmap) {
+          onRoadmapGenerated(roadmapData.roadmap);
+        }
+        
+        // Scroll down to the roadmap section after generation
+        setTimeout(() => {
+          window.scrollTo({
+            top: window.innerHeight,
+            behavior: 'smooth'
+          });
+        }, 500);
+      }
+    } catch (error) {
+      console.error('Error generating roadmap:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate roadmap. Please make sure the backend server is running.';
+      
+      if (onRoadmapError) {
+        onRoadmapError(errorMessage);
+      } else {
+        alert(errorMessage);
+      }
+    } finally {
+      setRoadmapLoading(false);
     }
   };
 
@@ -138,6 +195,31 @@ const Toolbar: React.FC<ToolbarProps> = ({
       >
         🔗 Share
       </button>
+
+      {/* Generate Roadmap Button */}
+      {onGenerateRoadmap && (
+        <button
+          onClick={handleGenerateRoadmap}
+          disabled={roadmapLoading}
+          style={{
+            padding: '10px 16px',
+            backgroundColor: roadmapLoading ? 'var(--text-secondary)' : 'var(--button-primary)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: roadmapLoading ? 'not-allowed' : 'pointer',
+            fontSize: '14px',
+            fontWeight: '500',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            opacity: roadmapLoading ? 0.6 : 1,
+          }}
+          title="Generate learning roadmap from PDF"
+        >
+          {roadmapLoading ? '⏳ Generating...' : '🧠 Generate Roadmap'}
+        </button>
+      )}
 
       {/* Theme Toggle Button */}
       <button

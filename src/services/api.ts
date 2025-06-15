@@ -1,6 +1,8 @@
-// API Configuration (for future use when we have real backend)
+import axios from 'axios';
+
+// API Configuration - Check for environment variable or default to localhost
 // When implementing real backend calls, import axios and use it
-export const API_BASE_URL = 'https://api.smartpdf-reader.com';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 // Types
 export interface ChatMessage {
@@ -34,6 +36,15 @@ export interface ShareMetadata {
   title?: string;
   description?: string;
   tags?: string[];
+}
+
+export interface RoadmapResponse {
+  roadmap: Array<{
+    id: string;
+    label: string;
+    indegree_id?: string[];
+    outdegree_id?: string[];
+  }>;
 }
 
 // API Service Class
@@ -121,6 +132,38 @@ Would you like me to explain any specific aspect in more detail?`;
     } catch (error) {
       console.error('PDF Upload API error:', error);
       throw new Error('Failed to upload PDF');
+    }
+  }
+
+  // Generate roadmap from text
+  async generateRoadmap(text: string): Promise<RoadmapResponse> {
+    try {
+      console.log('🧠 Roadmap generation API called with text length:', text.length);
+      
+      const response = await axios.post(`${API_BASE_URL}/generate-roadmap`, {
+        text: text
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        timeout: 30000, // 30 second timeout
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Roadmap generation API error:', error);
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new Error('Roadmap generation endpoint not found. Make sure the backend server is running on http://localhost:8000');
+        }
+        if (error.code === 'ECONNREFUSED') {
+          throw new Error('Cannot connect to backend server. Make sure it\'s running on http://localhost:8000');
+        }
+        throw new Error(error.response?.data?.detail || error.message || 'Failed to generate roadmap');
+      }
+      
+      throw new Error('Failed to generate roadmap');
     }
   }
 }
