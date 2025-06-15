@@ -7,3 +7,4 @@ uv run --active start.py
 
 pnpm run dev
 
+our credits ran out for sarvam ai so tts is disabled currently. sorry :(
