@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 5173
 
 # Start development server with host set to allow external access
-CMD ["pnpm", "run", "dev", "--", "--host"]
+CMD ["pnpm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]

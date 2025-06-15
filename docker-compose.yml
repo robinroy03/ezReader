@@ -2,27 +2,27 @@ services:
   # Frontend service
   frontend:
     build: .
+    ports:
+      - "5173:5173"
     volumes:
       - .:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
       - VITE_API_BASE_URL=http://localhost/api
-    command: pnpm run dev -- --host
+    command: pnpm run dev
     networks:
       - app-network
 
   # Backend service
   backend:
     build: ./backend
-    volumes:
-      - ./backend:/app
-    environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
     networks:
       - app-network
-    depends_on:
-      - frontend
 
   # Nginx reverse proxy
   nginx:
