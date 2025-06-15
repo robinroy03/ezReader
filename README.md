@@ -5,3 +5,5 @@ uv run --active start.py
 
 
 pnpm run dev
+
+also https://github.com/robinroy03/ezreader-full
