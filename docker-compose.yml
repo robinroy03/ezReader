@@ -17,11 +17,11 @@ services:
 
   # Backend service
   backend:
-    build: ./backend
+    build: ./trae-backend
     ports:
       - "8000:8000"
     env_file:
-      - ./backend/.env
+      - ./trae-backend/.env
     networks:
       - app-network
 

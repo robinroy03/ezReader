@@ -184,7 +184,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       </button>
 
       {/* Share Button */}
-      <button
+      {/* <button
         onClick={handleShare}
         style={{
           padding: '10px 16px',
@@ -202,7 +202,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         title="Share document"
       >
         🔗 Share
-      </button>
+      </button> */}
 
       {/* Generate Roadmap Button */}
       {onGenerateRoadmap && (

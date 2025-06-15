@@ -2,14 +2,18 @@ import axios from 'axios';
 
 // Configuration - Simple hostname-based detection
 // If running on localhost = local development, otherwise = VPS production
-const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+// const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-// API Configuration
-// On VPS: use /api proxy routes through nginx
-// On local: connect directly to backend on localhost:8000
-export const API_BASE_URL = IS_LOCAL 
-  ? 'http://localhost:8000'  // Direct connection for local development
-  : '/api';  // Use relative path for nginx proxy on VPS
+// // API Configuration
+// // On VPS: use /api proxy routes through nginx
+// // On local: connect directly to backend on localhost:8000
+// export const API_BASE_URL = IS_LOCAL 
+//   ? 'http://localhost:8000'  // Direct connection for local development
+//   : '/api';  // Use relative path for nginx proxy on VPS
+
+const IS_LOCAL = false;
+
+export const API_BASE_URL = 'http://localhost:8000';
 
 console.log('🔧 API Configuration:', {
   IS_LOCAL,
@@ -38,6 +42,7 @@ export interface ChatRequest {
   context?: string; // Selected text from PDF
   attachments?: File[];
   conversationId?: string;
+  previousMessages?: ChatMessage[];
 }
 
 export interface ShareResponse {
@@ -59,6 +64,21 @@ export interface RoadmapResponse {
     outdegree_id?: string[];
   }>;
 }
+
+// Helper function to convert File to base64
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+      const base64 = result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = error => reject(error);
+  });
+};
 
 // API Service Class
 class APIService {
@@ -84,28 +104,125 @@ class APIService {
     try {
       console.log('💬 Chat API called with:', request);
       
-      // Dummy streaming response
-      const dummyResponse = `I understand you're asking about: "${request.context || request.message}". 
+      // Convert attachments to base64 if present
+      let images: string[] | undefined;
+      let pdf_files: string[] | undefined;
+      let audio_files: string[] | undefined;
 
-Based on the PDF content, here's my analysis:
+      if (request.attachments && request.attachments.length > 0) {
+        images = [];
+        pdf_files = [];
+        audio_files = [];
 
-This appears to be discussing evaluation orders for SDDs (Syntax-Directed Definitions). The key points are:
+        for (const file of request.attachments) {
+          const base64 = await fileToBase64(file);
+          
+          if (file.type.startsWith('image/')) {
+            images.push(base64);
+          } else if (file.type === 'application/pdf') {
+            pdf_files.push(base64);
+          } else if (file.type.startsWith('audio/')) {
+            audio_files.push(base64);
+          }
+        }
 
-1. S-Attributed definitions guarantee an evaluation order
-2. They don't permit dependency graphs with cycles  
-3. Attributes are evaluated in bottom-up order
-4. Post-order traversal is used for evaluation
+        // Remove empty arrays
+        if (images.length === 0) images = undefined;
+        if (pdf_files.length === 0) pdf_files = undefined;
+        if (audio_files.length === 0) audio_files = undefined;
+      }
 
-Would you like me to explain any specific aspect in more detail?`;
+      // Format main query with context if available
+      const main_query = request.context 
+        ? `Context: ${request.context}\n\nQuestion: ${request.message}`
+        : request.message;
 
-      // Simulate streaming by yielding chunks
-      const words = dummyResponse.split(' ');
-      for (let i = 0; i < words.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 50)); // Simulate typing delay
-        yield words[i] + ' ';
+      // Convert previous messages to backend format
+      const previous_messages = request.previousMessages?.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
+      const response = await fetch(`${API_BASE_URL}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          main_query,
+          pdf_files,
+          images,
+          audio_files,
+          previous_messages,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No response body reader available');
+      }
+
+      const decoder = new TextDecoder();
+      
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          
+          if (done) {
+            break;
+          }
+          
+          const chunk = decoder.decode(value, { stream: true });
+          console.log('📥 Received chunk:', chunk); // Debug log
+          
+          const lines = chunk.split('\n');
+          
+          for (const line of lines) {
+            if (line.trim() === '') continue; // Skip empty lines
+            
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') {
+                console.log('🏁 Stream ended');
+                return;
+              }
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.content) {
+                  console.log('✅ Yielding content:', parsed.content);
+                  yield parsed.content;
+                } else if (parsed.error) {
+                  console.error('❌ Stream error:', parsed.error);
+                  throw new Error(parsed.error);
+                }
+              } catch (parseError) {
+                // Skip invalid JSON lines
+                console.warn('Failed to parse SSE data:', data, parseError);
+              }
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock();
       }
     } catch (error) {
       console.error('Chat API error:', error);
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Cannot connect to backend server. Make sure it\'s running on http://localhost:8000');
+      }
+      
+      // Additional debugging
+      console.error('Full error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : typeof error
+      });
+      
       throw new Error('Failed to get chat response');
     }
   }
@@ -153,7 +270,7 @@ Would you like me to explain any specific aspect in more detail?`;
     try {
       console.log('🧠 Roadmap generation API called with text length:', text.length);
       
-      const response = await axios.post(`${API_BASE_URL}/generate-roadmap`, {
+      const response = await axios.post(`${API_BASE_URL}/roadmap/generate`, {
         text: text
       }, {
         headers: {

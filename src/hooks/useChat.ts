@@ -35,11 +35,25 @@ export const useChat = () => {
 
       setMessages(prev => [...prev, assistantMessage]);
 
-      // Stream the response
+      // Stream the response with previous messages context
+      const requestWithContext = {
+        ...request,
+        previousMessages: messages.filter(msg => msg.role !== 'assistant' || msg.content.trim() !== '')
+      };
+
       let fullContent = '';
-      for await (const chunk of apiService.streamChat(request)) {
-        fullContent += chunk;
-        setStreamingMessage(fullContent);
+      console.log('🚀 Starting chat stream...');
+      
+      try {
+        for await (const chunk of apiService.streamChat(requestWithContext)) {
+          console.log('📥 Received chunk in hook:', chunk);
+          fullContent += chunk;
+          setStreamingMessage(fullContent);
+        }
+        console.log('✅ Chat stream completed. Total content:', fullContent.length, 'characters');
+      } catch (streamError) {
+        console.error('❌ Streaming error:', streamError);
+        throw streamError;
       }
 
       // Update the assistant message with full content

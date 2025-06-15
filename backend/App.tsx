@@ -43,7 +43,7 @@ function App() {
         throw new Error('Text input cannot be empty')
       }
 
-      const response = await fetch('http://localhost:8000/generate-roadmap', {
+      const response = await fetch('http://localhost:8000/roadmap/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

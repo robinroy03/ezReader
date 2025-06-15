@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import type { ChatMessage } from '../services/api';
 import { useChat } from '../hooks/useChat';
+import { extractFullTextFromPDF } from '../utils/pdfTextExtractor';
 
 interface ChatInterfaceProps {
   selectedText?: string;
@@ -14,20 +15,42 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const { messages, isLoading, streamingMessage, sendMessage, clearMessages } = useChat();
   const [input, setInput] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [isExtractingPdf, setIsExtractingPdf] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll to bottom when new messages arrive
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, streamingMessage]);
+  // Removed auto-scroll to allow users to read without interruption
+  // Users can manually scroll to see new messages if needed
 
   const handleSend = async () => {
     if (!input.trim() && attachments.length === 0 && !selectedText) return;
 
+    // Only include context if user has explicitly selected text
+    let context: string | undefined = undefined;
+    
+    if (selectedText) {
+      try {
+        // Extract full PDF text only when there's selected text
+        setIsExtractingPdf(true);
+        console.log('📄 Extracting full PDF text for selected context...');
+        const fullPdfText = await extractFullTextFromPDF();
+        console.log('✅ PDF text extracted:', fullPdfText.length, 'characters');
+        setIsExtractingPdf(false);
+
+        // Combine selected text and full PDF context
+        context = `Selected Text: ${selectedText}\n\nFull PDF Content:\n${fullPdfText}`;
+      } catch (error) {
+        setIsExtractingPdf(false);
+        console.error('Error extracting PDF text, using only selected text:', error);
+        
+        // Fallback to just selected text if PDF extraction fails
+        context = selectedText;
+      }
+    }
+
     const request = {
       message: input,
-      context: selectedText,
+      context: context,
       attachments: attachments.length > 0 ? attachments : undefined,
     };
 
@@ -138,8 +161,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           ))
         )}
 
+        {/* PDF Extraction Status */}
+        {isExtractingPdf && (
+          <div style={{
+            backgroundColor: 'var(--bg-tertiary)',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            border: `1px solid var(--border-secondary)`,
+            alignSelf: 'center',
+            fontSize: '12px',
+            color: 'var(--text-secondary)',
+            fontStyle: 'italic',
+            marginBottom: '8px',
+          }}>
+            📄 Extracting PDF text... Please wait.
+          </div>
+        )}
+
         {/* Streaming message */}
-        {streamingMessage && (
+        {(streamingMessage || (isLoading && messages.length > 0)) && (
           <div style={{
             backgroundColor: 'var(--bg-primary)',
             padding: '12px',
@@ -147,10 +187,37 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             border: `1px solid var(--border-primary)`,
             alignSelf: 'flex-start',
             maxWidth: '85%',
+            position: 'relative',
           }}>
-            <div style={{ fontSize: '14px', lineHeight: '1.5', color: 'var(--text-primary)' }}>
-              {streamingMessage}
-              <span className="blinking-cursor">|</span>
+            {streamingMessage ? (
+              <div style={{ fontSize: '14px', lineHeight: '1.5', color: 'var(--text-primary)' }}>
+                {streamingMessage}
+                <span className="blinking-cursor">|</span>
+              </div>
+            ) : (
+              <div style={{ 
+                fontSize: '14px', 
+                lineHeight: '1.5', 
+                color: 'var(--text-secondary)',
+                fontStyle: 'italic'
+              }}>
+                🤖 Thinking...
+                <span className="blinking-cursor">|</span>
+              </div>
+            )}
+            
+            {/* Streaming indicator */}
+            <div 
+              className="streaming-indicator"
+              style={{
+                position: 'absolute',
+                bottom: '4px',
+                right: '8px',
+                fontSize: '10px',
+                color: 'var(--text-secondary)',
+              }}
+            >
+              ●
             </div>
           </div>
         )}
@@ -203,35 +270,44 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               </div>
             )}
             {/* File attachments */}
-            {attachments.map((file, index) => (
-              <div
-                key={index}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  backgroundColor: 'var(--bg-tertiary)',
-                  color: 'var(--text-primary)',
-                  padding: '4px 8px',
-                  borderRadius: '16px',
-                  fontSize: '12px',
-                  border: `1px solid var(--border-secondary)`,
-                }}
-              >
-                📎 {file.name}
-                <button
-                  onClick={() => removeAttachment(index)}
+            {attachments.map((file, index) => {
+              const getFileIcon = (file: File) => {
+                if (file.type.startsWith('image/')) return '🖼️';
+                if (file.type === 'application/pdf') return '📄';
+                if (file.type.startsWith('audio/')) return '🎵';
+                return '📎';
+              };
+
+              return (
+                <div
+                  key={index}
                   style={{
-                    marginLeft: '4px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'var(--button-danger)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: 'var(--bg-tertiary)',
+                    color: 'var(--text-primary)',
+                    padding: '4px 8px',
+                    borderRadius: '16px',
+                    fontSize: '12px',
+                    border: `1px solid var(--border-secondary)`,
                   }}
                 >
-                  ×
-                </button>
-              </div>
-            ))}
+                  {getFileIcon(file)} {file.name}
+                  <button
+                    onClick={() => removeAttachment(index)}
+                    style={{
+                      marginLeft: '4px',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: 'var(--button-danger)',
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -242,7 +318,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
               onPaste={handlePaste}
-              placeholder="Ask a question about the PDF..."
+              placeholder="Ask a question... (select PDF text first for context)"
               disabled={isLoading}
               style={{
                 width: '100%',
@@ -268,7 +344,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               ref={fileInputRef}
               type="file"
               multiple
-              accept="image/*"
+              accept="image/*,application/pdf,audio/*"
               onChange={handleFileUpload}
               style={{ display: 'none' }}
             />
@@ -296,20 +372,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             
             <button
               onClick={handleSend}
-              disabled={isLoading || (!input.trim() && attachments.length === 0)}
+              disabled={isLoading || isExtractingPdf || (!input.trim() && attachments.length === 0)}
               style={{
                 padding: '0 16px',
-                backgroundColor: isLoading ? 'var(--text-secondary)' : 'var(--button-primary)',
+                backgroundColor: (isLoading || isExtractingPdf) ? 'var(--text-secondary)' : 'var(--button-primary)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
-                cursor: isLoading ? 'not-allowed' : 'pointer',
+                cursor: (isLoading || isExtractingPdf) ? 'not-allowed' : 'pointer',
                 fontSize: '16px',
                 flex: 1,
                 minHeight: '32px',
               }}
             >
-              {isLoading ? '⏳' : '➤'}
+              {isExtractingPdf ? '📄' : isLoading ? '⏳' : '➤'}
             </button>
           </div>
         </div>
@@ -323,6 +399,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         @keyframes blink {
           0%, 50% { opacity: 1; }
           51%, 100% { opacity: 0; }
+        }
+
+        .streaming-indicator {
+          animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+          0% { opacity: 0.3; }
+          50% { opacity: 1; }
+          100% { opacity: 0.3; }
         }
       `}</style>
     </div>
@@ -352,7 +438,19 @@ const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
         <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
           {message.attachments && message.attachments.length > 0 && (
             <div style={{ fontSize: '12px', opacity: 0.8 }}>
-              📎 {message.attachments.length} file attachment(s)
+              {message.attachments.map((file, index) => {
+                const getFileIcon = (file: File) => {
+                  if (file.type.startsWith('image/')) return '🖼️';
+                  if (file.type === 'application/pdf') return '📄';
+                  if (file.type.startsWith('audio/')) return '🎵';
+                  return '📎';
+                };
+                return (
+                  <div key={index}>
+                    {getFileIcon(file)} {file.name}
+                  </div>
+                );
+              })}
             </div>
           )}
           {message.context && (
