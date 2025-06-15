@@ -23,29 +23,34 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   // Users can manually scroll to see new messages if needed
 
   const handleSend = async () => {
-    if (!input.trim() && attachments.length === 0 && !selectedText) return;
+    if (!input.trim() && attachments.length === 0) return;
 
-    // Only include context if user has explicitly selected text
     let context: string | undefined = undefined;
     
-    if (selectedText) {
-      try {
-        // Extract full PDF text only when there's selected text
-        setIsExtractingPdf(true);
-        console.log('📄 Extracting full PDF text for selected context...');
-        const fullPdfText = await extractFullTextFromPDF();
-        console.log('✅ PDF text extracted:', fullPdfText.length, 'characters');
-        setIsExtractingPdf(false);
+    try {
+      // Always extract full PDF text for context
+      setIsExtractingPdf(true);
+      console.log('📄 Extracting full PDF text for context...');
+      const fullPdfText = await extractFullTextFromPDF();
+      console.log('✅ PDF text extracted:', fullPdfText.length, 'characters');
+      setIsExtractingPdf(false);
 
-        // Combine selected text and full PDF context
-        context = `Selected Text: ${selectedText}\n\nFull PDF Content:\n${fullPdfText}`;
-      } catch (error) {
-        setIsExtractingPdf(false);
-        console.error('Error extracting PDF text, using only selected text:', error);
-        
-        // Fallback to just selected text if PDF extraction fails
+      // Build context with full PDF content
+      context = `Full PDF Content:\n${fullPdfText}`;
+      
+      // Add selected text if available
+      if (selectedText) {
+        context = `Selected Text: ${selectedText}\n\n${context}`;
+      }
+    } catch (error) {
+      setIsExtractingPdf(false);
+      console.error('Error extracting PDF text:', error);
+      
+      // Fallback to just selected text if PDF extraction fails and selected text exists
+      if (selectedText) {
         context = selectedText;
       }
+      // If no selected text and PDF extraction fails, context will remain undefined
     }
 
     const request = {
@@ -150,9 +155,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             marginTop: '60px',
           }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🤖</div>
-            <p>Select text from the PDF and ask me anything!</p>
+            <p>Ask me anything about the PDF!</p>
             <p style={{ fontSize: '14px' }}>
-              I can help explain concepts, summarize content, or answer questions.
+              I can help explain concepts, summarize content, or answer questions. I'll automatically have access to the full PDF content.
             </p>
           </div>
         ) : (
@@ -318,7 +323,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
               onPaste={handlePaste}
-              placeholder="Ask a question... (select PDF text first for context)"
+              placeholder="Ask a question about the PDF..."
               disabled={isLoading}
               style={{
                 width: '100%',
