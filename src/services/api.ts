@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// API Configuration - Check for environment variable or default to localhost
-// When implementing real backend calls, import axios and use it
+// API Configuration - Use nginx proxy route or default to localhost:8000 for development
+// When using docker-compose, nginx will proxy /api routes to the backend
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 // Types

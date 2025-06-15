@@ -11,8 +11,10 @@
     "serve-pdfjs": "vite --host"
   },
   "dependencies": {
+    "@types/d3-hierarchy": "^3.1.7",
     "@xyflow/react": "^12.7.0",
     "axios": "^1.10.0",
+    "d3-hierarchy": "^3.1.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

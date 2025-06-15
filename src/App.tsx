@@ -28,6 +28,7 @@ function App() {
     outdegree_id?: string[];
   }>>([]);
   const [roadmapError, setRoadmapError] = useState('');
+  const [roadmapLoading, setRoadmapLoading] = useState(false);
 
   const clearSelectedText = () => {
     setSelectedText('');
@@ -45,6 +46,10 @@ function App() {
 
   const handleRoadmapError = (error: string) => {
     setRoadmapError(error);
+  };
+
+  const handleRoadmapLoadingChange = (loading: boolean) => {
+    setRoadmapLoading(loading);
   };
 
 
@@ -126,14 +131,15 @@ function App() {
 
         {/* Toolbar */}
         <div style={{ flexShrink: 0 }}>
-          <Toolbar
-            onFileUpload={uploadPDF}
-            isLoading={pdfLoading}
-            pdfText={mockPdfText}
-            onGenerateRoadmap={pdfUrl ? handleGenerateRoadmap : undefined}
-            onRoadmapGenerated={handleRoadmapGenerated}
-            onRoadmapError={handleRoadmapError}
-          />
+                      <Toolbar
+              onFileUpload={uploadPDF}
+              isLoading={pdfLoading}
+              pdfText={mockPdfText}
+              onGenerateRoadmap={pdfUrl ? handleGenerateRoadmap : undefined}
+              onRoadmapGenerated={handleRoadmapGenerated}
+              onRoadmapError={handleRoadmapError}
+              onRoadmapLoadingChange={handleRoadmapLoadingChange}
+            />
         </div>
 
           {/* Main Content */}
@@ -250,6 +256,7 @@ function App() {
             <RoadmapGenerator 
               roadmapData={roadmapData}
               error={roadmapError}
+              isLoading={roadmapLoading}
               onClear={handleClearRoadmap}
             />
           </div>

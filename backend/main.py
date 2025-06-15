@@ -15,7 +15,12 @@ app = FastAPI(title="Learning Roadmap API")
 # Enable CORS for frontend connection
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],  # Add your frontend URLs
+    allow_origins=[
+        "http://localhost:5173", 
+        "http://localhost:3000",
+        "http://localhost",
+        "http://localhost:80"
+    ],  # Add your frontend URLs including nginx proxy
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

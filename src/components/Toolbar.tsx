@@ -15,6 +15,7 @@ interface ToolbarProps {
     outdegree_id?: string[];
   }>) => void;
   onRoadmapError?: (error: string) => void;
+  onRoadmapLoadingChange?: (loading: boolean) => void;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -24,6 +25,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onGenerateRoadmap,
   onRoadmapGenerated,
   onRoadmapError,
+  onRoadmapLoadingChange,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isPlaying, isLoading: ttsLoading, playText, stopPlayback } = useTTS();
@@ -75,6 +77,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
     
     try {
       setRoadmapLoading(true);
+      if (onRoadmapLoadingChange) {
+        onRoadmapLoadingChange(true);
+      }
       
       // Clear any previous errors
       if (onRoadmapError) {
@@ -112,6 +117,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
       }
     } finally {
       setRoadmapLoading(false);
+      if (onRoadmapLoadingChange) {
+        onRoadmapLoadingChange(false);
+      }
     }
   };
 
