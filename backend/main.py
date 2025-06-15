@@ -16,13 +16,15 @@ app = FastAPI(title="Learning Roadmap API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173", 
-        "http://localhost:3000",
-        "http://localhost",
-        "http://localhost:80"
-    ],  # Add your frontend URLs including nginx proxy
+        "http://localhost:5173",   # Vite dev server
+        "http://localhost:3000",   # Alternative frontend port
+        "http://localhost",        # Nginx proxy
+        "http://localhost:80",     # Nginx proxy explicit port
+        "http://127.0.0.1:5173",   # Alternative localhost format
+        "http://127.0.0.1",        # Alternative localhost format
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -158,6 +160,14 @@ async def generate_roadmap(input_data: TextInput):
 async def root():
     return {"message": "Learning Roadmap API is running!"}
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "message": "Backend API is running"}
+
 if __name__ == "__main__":
     import uvicorn
+    print("🚀 Starting Learning Roadmap API server...")
+    print("📡 Server will be available at: http://0.0.0.0:8000")
+    print("🏥 Health check: http://0.0.0.0:8000/health")
+    print("🗺️  Roadmap endpoint: http://0.0.0.0:8000/generate-roadmap")
     uvicorn.run(app, host="0.0.0.0", port=8000) 

@@ -1,8 +1,21 @@
 import axios from 'axios';
 
-// API Configuration - Use nginx proxy route or default to localhost:8000 for development
-// When using docker-compose, nginx will proxy /api routes to the backend
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// Configuration - Toggle between local development and production (Docker) mode
+const IS_PRODUCTION = import.meta.env.VITE_PRODUCTION_MODE === 'true' || false;
+
+// API Configuration
+// In production (Docker), nginx will proxy /api routes to the backend
+// In local development, connect directly to backend on localhost:8000
+export const API_BASE_URL = IS_PRODUCTION 
+  ? (import.meta.env.VITE_API_BASE_URL || 'http://localhost/api')
+  : 'http://localhost:8000';
+
+console.log('🔧 API Configuration:', {
+  IS_PRODUCTION,
+  API_BASE_URL,
+  VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
+  VITE_PRODUCTION_MODE: import.meta.env.VITE_PRODUCTION_MODE
+});
 
 // Types
 export interface ChatMessage {
