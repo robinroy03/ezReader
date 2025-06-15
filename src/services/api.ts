@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // Configuration - Toggle between local development and production (Docker) mode
-const IS_PRODUCTION = import.meta.env.VITE_PRODUCTION_MODE === 'true' || false;
+// TEMPORARY FIX: Force local development mode
+const IS_PRODUCTION = false; // Temporarily hardcoded for debugging
 
 // API Configuration
 // In production (Docker), nginx will proxy /api routes to the backend
@@ -10,11 +11,10 @@ export const API_BASE_URL = IS_PRODUCTION
   ? (import.meta.env.VITE_API_BASE_URL || 'http://localhost/api')
   : 'http://localhost:8000';
 
-console.log('🔧 API Configuration:', {
+console.log('🔧 API Configuration Debug (TEMPORARY FIX):', {
   IS_PRODUCTION,
   API_BASE_URL,
-  VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
-  VITE_PRODUCTION_MODE: import.meta.env.VITE_PRODUCTION_MODE
+  message: 'Hardcoded to local development mode'
 });
 
 // Types
