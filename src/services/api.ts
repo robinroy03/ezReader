@@ -1,20 +1,20 @@
 import axios from 'axios';
 
-// Configuration - Toggle between local development and production (Docker) mode
-// TEMPORARY FIX: Force local development mode
-const IS_PRODUCTION = false; // Temporarily hardcoded for debugging
+// Configuration - Simple hostname-based detection
+// If running on localhost = local development, otherwise = VPS production
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 // API Configuration
-// In production (Docker), nginx will proxy /api routes to the backend
-// In local development, connect directly to backend on localhost:8000
-export const API_BASE_URL = IS_PRODUCTION 
-  ? (import.meta.env.VITE_API_BASE_URL || 'http://localhost/api')
-  : 'http://localhost:8000';
+// On VPS: use /api proxy routes through nginx
+// On local: connect directly to backend on localhost:8000
+export const API_BASE_URL = IS_LOCAL 
+  ? 'http://localhost:8000'  // Direct connection for local development
+  : '/api';  // Use relative path for nginx proxy on VPS
 
-console.log('🔧 API Configuration Debug (TEMPORARY FIX):', {
-  IS_PRODUCTION,
+console.log('🔧 API Configuration:', {
+  IS_LOCAL,
   API_BASE_URL,
-  message: 'Hardcoded to local development mode'
+  hostname: window.location.hostname
 });
 
 // Types
